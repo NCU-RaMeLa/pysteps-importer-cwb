@@ -1,0 +1,3 @@
+
+
+from pysteps_importer_cwb import importer_cwb_compref
