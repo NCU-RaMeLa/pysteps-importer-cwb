@@ -10,7 +10,7 @@ def test_importers_discovery():
 
     from pysteps.io import interface
 
-    new_importers = ["importer_cwb_compref_xxx"]
+    new_importers = ["importer_cwb_compref_cwb"]
     for importer in new_importers:
         assert importer.replace("import_", "") in interface._importer_methods
 

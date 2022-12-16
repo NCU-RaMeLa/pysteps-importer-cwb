@@ -65,7 +65,7 @@ setup(
     # },
     entry_points={
         'pysteps.plugins.importers': [
-            'importer_cwb_compref_xxx=pysteps_importer_cwb.importer_cwb_compref:importer_cwb_compref_xxx',
+            'importer_cwb_compref_cwb=pysteps_importer_cwb.importer_cwb_compref:importer_cwb_compref_cwb',
             # Add additional importers if needed.
         ]
     },

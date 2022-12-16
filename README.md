@@ -27,7 +27,7 @@ pysteps-importer-cwb/內應該會有docs, pysteps_importer_cwb, tests, ......等
 import pysteps
 import sys
 sys.path.append('./pysteps-importer-cwb')
-from pysteps_importer_cwb.importer_cwb_compref import importer_cwb_compref_xxx
+from pysteps_importer_cwb.importer_cwb_compref import importer_cwb_compref_cwb
 ```
 
 ### 3. 使用此module
@@ -42,7 +42,7 @@ R, quality, metadata = pysteps.io.read_timeseries(fns, importer, **importer_kwar
 使用此module後，改成使用以下方式進行import即可:
 ```python
 date = datetime.strptime("201009190600", "%Y%m%d%H%M")
-importer = importer_cwb_compref_xxx
+importer = importer_cwb_compref_cwb
 fns = pysteps.io.archive.find_by_date(date, root_path="./radar/cwb", path_fmt="%Y/%m/%d", fn_pattern="COMPREF.%Y%m%d.%H%M", fn_ext="gz", timestep=10, num_prev_files=9)
 R, quality, metadata = pysteps.io.read_timeseries(fns, importer, **importer_kwargs)
 ```
@@ -103,7 +103,7 @@ fns = pysteps.io.archive.find_by_date(
 
 # Read the radar composites
 #importer = pysteps.io.get_method(importer_name, "importer")
-importer = importer_cwb_compref_xxx
+importer = importer_cwb_compref_cwb
 R, quality, metadata = pysteps.io.read_timeseries(fns, importer, **importer_kwargs)
 
 ###############################################################################

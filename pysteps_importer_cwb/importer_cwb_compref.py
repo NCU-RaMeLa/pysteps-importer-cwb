@@ -22,7 +22,7 @@ import pyproj
 from pysteps.decorators import postprocess_import
 
 
-# Function importer_cwb_compref_xxx to import XXX-format
+# Function importer_cwb_compref_cwb to import cwb-format
 # files from the ABC institution
 
 # IMPORTANT: The name of the importer should follow the "importer_institution_format"
@@ -84,7 +84,7 @@ from pysteps.decorators import postprocess_import
 
 
 @postprocess_import()
-def importer_cwb_compref_xxx(filename, gzipped=False, **kwargs):
+def importer_cwb_compref_cwb(filename, gzipped=False, **kwargs):
     """
     A detailed description of the importer. A minimal documentation is
     strictly needed since the pysteps importers interface expect docstrings.
@@ -126,7 +126,7 @@ def importer_cwb_compref_xxx(filename, gzipped=False, **kwargs):
     ### Uncomment the next lines if pyproj is needed for the importer
     # if not PYPROJ_IMPORTED:
     #     raise MissingOptionalDependency(
-    #         "pyproj package is required by importer_cwb_compref_xxx
+    #         "pyproj package is required by importer_cwb_compref_cwb
     #         "but it is not installed"
     #     )
 
