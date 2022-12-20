@@ -110,11 +110,11 @@ R, quality, metadata = pysteps.io.read_timeseries(fns, importer, **importer_kwar
 ```
 
 # 下載 CWB Open weather data
-此module另有CWB open data雷達回波資料下載用插件方便即時import雷達資料
-(需有氣象會員授權碼: CWB-XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX)
-預設存檔於 './radar/cwb_opendata', 檔名為COMPREF.OpenData.yyyymmdd.HHMM.gz
-向CWB請求資料下載時與查找資料之時間區間為使用台灣時間(UTC+8)
-下載後之檔名與檔頭內容皆會轉為UTC
+此module另有CWB open data雷達回波資料下載用插件方便即時import雷達資料<br>
+(需要有氣象會員授權碼: CWB-XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX)<br>
+預設存檔於 './radar/cwb_opendata', 檔名為COMPREF.OpenData.yyyymmdd.HHMM.gz<br>
+向CWB請求資料下載時與查找資料之時間區間為使用台灣時間(UTC+8)<br>
+下載後之檔名與檔頭內容皆會轉為UTC<br>
 
 ### 快速使用方式:
 ```python
@@ -149,9 +149,9 @@ Parameters
 '''
 ```
 
-若為快速使用方式, 預設存儲路徑為 ./radar/cwb_opendata
-會先刪除 ./radar/cwb_opendata 資料夾後再重新建立資料夾進行下載
-並從 https://opendata.cwb.gov.tw 下載最新10筆雷達回波資料
+若為快速使用方式, 預設存儲路徑為 ./radar/cwb_opendata<br>
+會先刪除 ./radar/cwb_opendata 資料夾後再重新建立資料夾進行下載<br>
+並從 https://opendata.cwb.gov.tw 下載最新10筆雷達回波資料<br>
 
 ### 進階使用:
 ```python
