@@ -165,6 +165,7 @@ download_data = download_cwb_opendata(
     offset=3, # 從第 3 筆開始回傳
     timeFrom="2022-12-06 10:22:32", # 從 2022/12/06 10:22:32 (UTC+8) 開始
     timeTo="2022-12-20 05:12:49" # 到 2022/12/20 05:12:49 (UTC+8) 結束, 此時間段CWB擁有的資料
+    )
 ```
 
 接著修改 importer 所需要的資訊, 將
