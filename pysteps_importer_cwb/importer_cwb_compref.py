@@ -88,7 +88,7 @@ from pysteps.decorators import postprocess_import
 #
 
 @postprocess_import()
-def importer_cwb_compref_cwb(filename, gzipped=False):
+def importer_cwb_compref_cwb(filename, gzipped=False, **kwargs):
     """
     A detailed description of the importer. A minimal documentation is
     strictly needed since the pysteps importers interface expect docstrings.
