@@ -174,7 +174,7 @@ def importer_cwb_compref_cwb(filename, gzipped=False, **kwargs):
     varname2 = np.frombuffer(fid, dtype=np.int32, count=4, offset=128+4*nz)
     varunit,unkn02 = np.frombuffer(fid, dtype='S3', count=2, offset=144+4*nz)
     var_scale,missing,nradar = np.frombuffer(fid, dtype=np.int32, count=3, offset=150+4*nz)
-    mosradar = np.frombuffer(fid, dtype=np.int32, count=nradar, offset=162+4*nz)
+    mosradar = np.frombuffer(fid, dtype='S4', count=nradar, offset=162+4*nz)
     var = np.frombuffer(fid, dtype=np.int16, count=-1, offset=162+4*nz+4*nradar)
     gz_fid.close()
 
@@ -306,6 +306,34 @@ def download_cwb_opendata(
 
             parameterSet = RawData['cwbopendata']['dataset']['datasetInfo']['parameterSet']['parameter']
 
+            mosradar = parameterSet[0]['radarName'].split('、')
+            
+            nradar = np.size(mosradar)
+
+            for i in np.arange(0,nradar,1):
+                if mosradar[i].find('五分山') !=-1:
+                    mosradar[i]='RCWF'
+                elif mosradar[i].find('花蓮') !=-1:
+                    mosradar[i]='RCHL'
+                elif mosradar[i].find('七股') !=-1:
+                    mosradar[i]='RCCG'
+                elif mosradar[i].find('墾丁') !=-1:
+                    mosradar[i]='RCKT'
+                elif mosradar[i].find('樹林') !=-1:
+                    mosradar[i]='RCSL'
+                elif mosradar[i].find('南屯') !=-1:
+                    mosradar[i]='RCNT'
+                elif mosradar[i].find('林園') !=-1:
+                    mosradar[i]='RCLY'
+                elif mosradar[i].find('馬公') !=-1:
+                    mosradar[i]='RCMK'
+                elif mosradar[i].find('清泉崗') !=-1:
+                    mosradar[i]='RCCK'
+                elif mosradar[i].find('石垣') !=-1:
+                    mosradar[i]='ISHI'
+                elif mosradar[i].find('綠島') !=-1:
+                    mosradar[i]='RCGI'
+                
             lon0 =  np.fromstring(parameterSet[1]['parameterValue'],
                                   dtype=np.float16,
                                   count=-1,
@@ -378,8 +406,8 @@ def download_cwb_opendata(
             unkn02 = 'TRA'
             var_scale = 10
             missing = -999
-            nradar = 1
-            mosradar = 'AAAA'
+            nradar = nradar
+            mosradar = mosradar
 
             os.makedirs(path+'/'+tLyy+'/'+tLmm+'/'+tLdd, exist_ok=True)
          
