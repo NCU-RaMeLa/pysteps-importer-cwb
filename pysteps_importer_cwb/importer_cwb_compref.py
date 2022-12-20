@@ -300,7 +300,6 @@ def download_cwb_opendata(
         if not os.path.isfile(tLpath):
             print("Making file:  "+tLpath)
             url = TList[i]['url']
-            #url = 'https://opendata.cwb.gov.tw/fileapi/v1/opendataapi/O-A0059-001?Authorization=CWB-7EBDEE0B-A179-4B6F-9021-2A91A0821264&format=JSON'
 
             RawData = xmltodict.parse(request.urlopen(url).read().decode("utf-8"))
 
