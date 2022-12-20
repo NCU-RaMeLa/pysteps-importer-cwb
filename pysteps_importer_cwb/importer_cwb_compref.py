@@ -277,6 +277,7 @@ def download_cwb_opendata(
     
     if remove_exist:
         import shutil
+        os.makedirs(path, exist_ok=True)
         shutil.rmtree(path)        
 
     timeFrom2 = datetime.strptime(timeFrom, '%Y-%m-%d %H:%M:%S').strftime("%Y-%m-%dT%H%%3A%M%%3A%S")
@@ -289,11 +290,11 @@ def download_cwb_opendata(
     
     for i in np.arange(0,np.size(TList,0),1):
         tLnum  = datetime.strptime(TList[i]['dataTime'], '%Y-%m-%d %H:%M:%S').timestamp()
-        tLyy = datetime.fromtimestamp(tLnum).strftime('%Y')
-        tLmm = datetime.fromtimestamp(tLnum).strftime('%m')
-        tLdd = datetime.fromtimestamp(tLnum).strftime('%d')
-        tLhh = datetime.fromtimestamp(tLnum).strftime('%H')
-        tLmn = datetime.fromtimestamp(tLnum).strftime('%M')
+        tLyy = datetime.utcfromtimestamp(tLnum).strftime('%Y')
+        tLmm = datetime.utcfromtimestamp(tLnum).strftime('%m')
+        tLdd = datetime.utcfromtimestamp(tLnum).strftime('%d')
+        tLhh = datetime.utcfromtimestamp(tLnum).strftime('%H')
+        tLmn = datetime.utcfromtimestamp(tLnum).strftime('%M')
         tLpath = path+'/'+tLyy+'/'+tLmm+'/'+tLdd+'/COMPREF.OpenData.'+tLyy+tLmm+tLdd+'.'+tLhh+tLmn+'.gz'
         
         os.makedirs(path, exist_ok=True)
