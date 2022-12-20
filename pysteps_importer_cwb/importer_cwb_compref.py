@@ -11,6 +11,11 @@ import numpy as np
 import gzip
 import pyproj
 
+from datetime import datetime, timedelta
+from urllib import request
+import os
+import xmltodict
+
 ### Uncomment the next lines if pyproj is needed for the importer.
 # try:
 #     import pyproj
@@ -82,9 +87,8 @@ from pysteps.decorators import postprocess_import
 #
 #
 
-
 @postprocess_import()
-def importer_cwb_compref_cwb(filename, gzipped=False, **kwargs):
+def importer_cwb_compref_cwb(filename, gzipped=False):
     """
     A detailed description of the importer. A minimal documentation is
     strictly needed since the pysteps importers interface expect docstrings.
@@ -214,3 +218,188 @@ def importer_cwb_compref_cwb(filename, gzipped=False, **kwargs):
 
     # IMPORTANT! The importers should always return the following fields:
     return precip, quality, metadata
+
+
+def download_cwb_opendata(
+        path="./radar/cwb_opendata",
+        remove_exist=True,
+        authorization="CWB-XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX",
+        limit=10,
+        offset=0,
+        timeFrom=(datetime.now()-timedelta(seconds=3600*2)).strftime("%Y-%m-%d %H:%M:%S"),
+        timeTo=datetime.now().strftime("%Y-%m-%d %H:%M:%S"), **kwargs):
+    """
+    A detailed description of the importer. A minimal documentation is
+    strictly needed since the pysteps importers interface expect docstrings.
+
+    For example, a documentation may look like this:
+
+    Import a precipitation field from the Awesome Bureau of Composites stored in
+    Grib format.
+
+    Parameters
+    ----------
+    path : str
+        path of the file to save.
+
+    remove_old : bool
+        True, False. Remove exist data (default = True)
+
+    authorization : str
+        * required 氣象開放資料平台會員授權碼
+
+    limit : int
+        限制最多回傳的資料, 預設為10
+
+    offset : int
+        指定從第幾筆後開始回傳, 預設為第 0 筆開始回傳
+
+    timeFrom : str
+        時間區段, 篩選需要之時間區段，時間從「timeFrom」開始篩選，直到內容之最後時間，並可與參數「timeTo」 合併使用，格式為「yyyy-MM-dd hh:mm:ss」
+
+    timeTo : str
+        時間區段, 篩選需要之時間區段，時間從內容之最初時間開始篩選，直到「timeTo」，並可與參數「timeFrom」 合併使用，格式為「yyyy-MM-ddThh:mm:ss」
+
+    {extra_kwargs_doc}
+
+    ####################################################################################
+    # The {extra_kwargs_doc} above is needed to add default keywords added to this     #
+    # importer by the pysteps.decorator.postprocess_import decorator.                  #
+    # IMPORTANT: Remove these box in the final version of this function                #
+    ####################################################################################
+
+    Returns
+    -------
+
+    None
+
+    """
+    
+    if remove_exist:
+        import shutil
+        shutil.rmtree(path)        
+
+    timeFrom2 = datetime.strptime(timeFrom, '%Y-%m-%d %H:%M:%S').strftime("%Y-%m-%dT%H%%3A%M%%3A%S")
+    timeTo2 = datetime.strptime(timeTo, '%Y-%m-%d %H:%M:%S').strftime("%Y-%m-%dT%H%%3A%M%%3A%S")
+    urlc = 'https://opendata.cwb.gov.tw/historyapi/v1/getMetadata/O-A0059-001' + '?Authorization=' + authorization + '&limit=' + str(limit) + '&offset=' + str(offset) + '&format=' + 'XML' + '&timeFrom=' + timeFrom2 + '&timeTo='  +timeTo2
+    
+    RawDataList = xmltodict.parse(request.urlopen(urlc).read().decode("utf-8"))
+    
+    TList = RawDataList['cwbopendata']['dataset']['resources']['resource']['data']['time']
+    
+    for i in np.arange(0,np.size(TList,0),1):
+        tLnum  = datetime.strptime(TList[i]['dataTime'], '%Y-%m-%d %H:%M:%S').timestamp()
+        tLyy = datetime.fromtimestamp(tLnum).strftime('%Y')
+        tLmm = datetime.fromtimestamp(tLnum).strftime('%m')
+        tLdd = datetime.fromtimestamp(tLnum).strftime('%d')
+        tLhh = datetime.fromtimestamp(tLnum).strftime('%H')
+        tLmn = datetime.fromtimestamp(tLnum).strftime('%M')
+        tLpath = path+'/'+tLyy+'/'+tLmm+'/'+tLdd+'/COMPREF.OpenData.'+tLyy+tLmm+tLdd+'.'+tLhh+tLmn+'.gz'
+        
+        os.makedirs(path, exist_ok=True)
+        if not os.path.isfile(tLpath):
+            print("Making file:  "+tLpath)
+            url = TList[i]['url']
+            #url = 'https://opendata.cwb.gov.tw/fileapi/v1/opendataapi/O-A0059-001?Authorization=CWB-7EBDEE0B-A179-4B6F-9021-2A91A0821264&format=JSON'
+
+            RawData = xmltodict.parse(request.urlopen(url).read().decode("utf-8"))
+
+            parameterSet = RawData['cwbopendata']['dataset']['datasetInfo']['parameterSet']['parameter']
+
+            lon0 =  np.fromstring(parameterSet[1]['parameterValue'],
+                                  dtype=np.float16,
+                                  count=-1,
+                                  sep=',')[0]
+
+            lat0 =  np.fromstring(parameterSet[1]['parameterValue'],
+                                  dtype=np.float16,
+                                  count=-1,
+                                  sep=',')[1]
+
+            res = float(parameterSet[2]['parameterValue'])
+
+            t0 = parameterSet[3]['parameterValue']
+            t0num   = datetime.strptime(t0, '%Y-%m-%dT%H:%M:%S%z').timestamp()
+            utct0 = datetime.utcfromtimestamp(t0num).strftime('%Y-%m-%d %H:%M:%S')
+
+            nx = np.fromstring(parameterSet[4]['parameterValue'],
+                              dtype=np.int16,
+                              count=-1,
+                              sep='*')[0]
+
+            ny = np.fromstring(parameterSet[4]['parameterValue'],
+                              dtype=np.int16,
+                              count=-1,
+                              sep='*')[1]
+
+            unit = parameterSet[5]['parameterValue']
+
+            dbz = np.fromstring(RawData['cwbopendata']['dataset']['contents']['content'],
+                                dtype=np.float32,
+                                count=-1,
+                                sep=',').astype(np.int16)
+
+            dbz = dbz.reshape(ny,nx)
+
+            # import matplotlib.pyplot as plt
+            # lon,lat = np.meshgrid(
+            #     np.arange(lon0,lon0+res*(x-1)+res/2,res),
+            #     np.arange(lat0,lat0+res*(y-1)+res/2,res))
+            # plt.pcolor(lon,lat,dbz)
+
+            yyyy = utct0[0:4]
+            mm = utct0[5:7]
+            dd = utct0[8:10]
+            hh = utct0[11:13]
+            mn = utct0[14:16]
+            ss = utct0[17:19]
+            nz = 1
+            # allocate(var4(nx,ny,nz),var_true(nx,ny,nz),var(nx,ny,nz))
+            # allocate(I_var_true(nx,ny,nz))
+            # allocate(zht(nz))
+            proj = 'LL'
+            map_scale = 1000
+            projlat1 = 30*map_scale
+            projlat2 = 60*map_scale
+            projlon = 120.75*map_scale
+            xy_scale = 1000
+            alon = lon0*xy_scale
+            alat = (lat0+res*(ny-1))*xy_scale
+            dxy_scale = 100000
+            dx = res*dxy_scale
+            dy = res*dxy_scale
+            zht = 0
+            z_scale = 1
+            i_bb_mode = -12922
+            unkn01 = np.zeros(9)
+            varname1 = ['Q','P','E','O']
+            varname2 = [1,2,3,4]
+            varunit = unit
+            unkn02 = 'TRA'
+            var_scale = 10
+            missing = -999
+            nradar = 1
+            mosradar = 'AAAA'
+
+            os.makedirs(path+'/'+tLyy+'/'+tLmm+'/'+tLdd, exist_ok=True)
+         
+            #write BUFFER
+            
+            buffer = np.array([yyyy,mm,dd,hh,mn,ss,nx,ny,nz], dtype='i4').tobytes()
+            buffer += np.array(proj, dtype='a4').tobytes()
+            buffer += np.array([map_scale,projlat1,projlat2,projlon,alon,alat,xy_scale,dx,dy,
+                      dxy_scale,zht,z_scale,i_bb_mode], dtype='i4').tobytes()
+            buffer += np.array(unkn01, dtype='i4').tobytes()
+            buffer += np.array(varname1, dtype='a1').tobytes()
+            buffer += np.array(varname2, dtype='i4').tobytes()
+            buffer += np.array(varunit, dtype='a3').tobytes()
+            buffer += np.array(unkn02, dtype='a3').tobytes()
+            buffer += np.array([var_scale,missing,nradar], dtype='i4').tobytes()
+            buffer += np.array(mosradar, dtype='a4').tobytes()
+
+            dbz1d = dbz.flatten()
+            buffer += np.array(dbz1d*var_scale, dtype='i2').tobytes()
+            gz_fid = gzip.open(tLpath, 'wb')
+            gz_fid.write(buffer)
+            gz_fid.close()
+    return None
