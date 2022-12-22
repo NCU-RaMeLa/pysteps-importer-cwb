@@ -224,7 +224,7 @@ def download_cwb_opendata(
         path="./radar/cwb_opendata",
         remove_exist=True,
         authorization="CWB-XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX",
-        limit=10,
+        limit=None,
         offset=0,
         timeFrom=(datetime.now()-timedelta(seconds=3600*2)).strftime("%Y-%m-%d %H:%M:%S"),
         timeTo=datetime.now().strftime("%Y-%m-%d %H:%M:%S"), **kwargs):
@@ -274,7 +274,8 @@ def download_cwb_opendata(
     None
 
     """
-    
+    if limit is None:
+        limit=''
     if remove_exist:
         import shutil
         os.makedirs(path, exist_ok=True)
