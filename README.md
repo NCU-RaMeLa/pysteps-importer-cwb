@@ -10,6 +10,10 @@
 * [CWB Open Weather Data](https://opendata.cwb.gov.tw)
 * [Central Weather Bureau](https://www.cwb.gov.tw)
 
+# 額外會用到的module:
+os<br>
+urllib3<br>
+datetime<br>
 
 # 支援的檔案格式
 支援氣象局二維全台雷達整合資料之gzip壓縮格式 (e.q. COMPREF.20211127.1430.gz)<br>
