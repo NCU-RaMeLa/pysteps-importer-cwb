@@ -370,12 +370,6 @@ def download_cwb_opendata(
 
             dbz = dbz.reshape(ny,nx)
 
-            # import matplotlib.pyplot as plt
-            # lon,lat = np.meshgrid(
-            #     np.arange(lon0,lon0+res*(x-1)+res/2,res),
-            #     np.arange(lat0,lat0+res*(y-1)+res/2,res))
-            # plt.pcolor(lon,lat,dbz)
-
             yyyy = utct0[0:4]
             mm = utct0[5:7]
             dd = utct0[8:10]
@@ -383,9 +377,6 @@ def download_cwb_opendata(
             mn = utct0[14:16]
             ss = utct0[17:19]
             nz = 1
-            # allocate(var4(nx,ny,nz),var_true(nx,ny,nz),var(nx,ny,nz))
-            # allocate(I_var_true(nx,ny,nz))
-            # allocate(zht(nz))
             proj = 'LL'
             map_scale = 1000
             projlat1 = 30*map_scale
