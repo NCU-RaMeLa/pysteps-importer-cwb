@@ -249,7 +249,7 @@ def download_cwb_opendata(
         * required 氣象開放資料平台會員授權碼
 
     limit : int
-        限制最多回傳的資料, 預設為10
+        限制最多回傳的資料, 預設為None
 
     offset : int
         指定從第幾筆後開始回傳, 預設為第 0 筆開始回傳
