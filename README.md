@@ -12,6 +12,7 @@
 
 # 額外會用到的module:
 os<br>
+shutil<br>
 urllib3<br>
 datetime<br>
 
