@@ -160,23 +160,24 @@ def importer_cwb_compref_cwb(filename, gzipped=False, **kwargs):
     if gzipped is False:
         fid = open(filename, mode='rb')
     else:
-        gz_fid = gzip.open(filename, 'rb')
-        fid = gz_fid.read()
+        import gzip
+        fid = gzip.open(filename, 'rb')
 
-    yyyy,mm,dd,hh,mn,ss,nx,ny,nz = np.frombuffer(fid, dtype=np.int32, count=9)
-    proj = np.frombuffer(fid, dtype='S4', count=1, offset=36)
-    map_scale,projlat1,projlat2,projlon = np.frombuffer(fid, dtype=np.int32, count=4, offset=40)
-    alon,alat,xy_scale,dx,dy,dxy_scale = np.frombuffer(fid, dtype=np.int32, count=6, offset=56)
-    zht = np.frombuffer(fid, dtype=np.int32, count=nz, offset=80)
-    z_scale,i_bb_mode = np.frombuffer(fid, dtype=np.int32, count=2, offset=80+4*nz)
-    unkn01 = np.frombuffer(fid, dtype=np.int32, count=9, offset=88+4*nz)
-    varname1 = np.frombuffer(fid, dtype='S4', count=1, offset=124+4*nz)
-    varname2 = np.frombuffer(fid, dtype=np.int32, count=4, offset=128+4*nz)
-    varunit,unkn02 = np.frombuffer(fid, dtype='S3', count=2, offset=144+4*nz)
-    var_scale,missing,nradar = np.frombuffer(fid, dtype=np.int32, count=3, offset=150+4*nz)
-    mosradar = np.frombuffer(fid, dtype='S4', count=nradar, offset=162+4*nz)
-    var = np.frombuffer(fid, dtype=np.int16, count=-1, offset=162+4*nz+4*nradar)
-    gz_fid.close()
+    buf = fid.read()
+    yyyy,mm,dd,hh,mn,ss,nx,ny,nz = np.frombuffer(buf, dtype=np.int32, count=9)
+    proj = np.frombuffer(buf, dtype='S4', count=1, offset=36)
+    map_scale,projlat1,projlat2,projlon = np.frombuffer(buf, dtype=np.int32, count=4, offset=40)
+    alon,alat,xy_scale,dx,dy,dxy_scale = np.frombuffer(buf, dtype=np.int32, count=6, offset=56)
+    zht = np.frombuffer(buf, dtype=np.int32, count=nz, offset=80)
+    z_scale,i_bb_mode = np.frombuffer(buf, dtype=np.int32, count=2, offset=80+4*nz)
+    unkn01 = np.frombuffer(buf, dtype=np.int32, count=9, offset=88+4*nz)
+    varname1 = np.frombuffer(buf, dtype='S4', count=1, offset=124+4*nz)
+    varname2 = np.frombuffer(buf, dtype=np.int32, count=4, offset=128+4*nz)
+    varunit,unkn02 = np.frombuffer(buf, dtype='S3', count=2, offset=144+4*nz)
+    var_scale,missing,nradar = np.frombuffer(buf, dtype=np.int32, count=3, offset=150+4*nz)
+    mosradar = np.frombuffer(buf, dtype='S4', count=nradar, offset=162+4*nz)
+    var = np.frombuffer(buf, dtype=np.int16, count=-1, offset=162+4*nz+4*nradar)
+    fid.close()
 
     dBZ = var/var_scale
     dBZ[dBZ<-990] = np.nan # -999 = No Value, -99 = Clear Sky
