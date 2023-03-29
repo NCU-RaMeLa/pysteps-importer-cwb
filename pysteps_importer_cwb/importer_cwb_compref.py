@@ -213,8 +213,8 @@ def importer_cwb_compref_cwb(filename, gzipped=False, **kwargs):
         x2=x2,
         y1=y1,
         y2=y2,
-        zr_a=23.5,
-        zr_b=1.65,
+        zr_a=223.04,
+        zr_b=1.51,
     )
 
     # IMPORTANT! The importers should always return the following fields:
